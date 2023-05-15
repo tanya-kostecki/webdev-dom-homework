@@ -29,7 +29,7 @@
       </div>
     </div>
   </body>
-
+  
   <script>
     const addFormName = document.querySelector('.add-form-name');
     const addFormText = document.querySelector('.add-form-text');
@@ -37,23 +37,33 @@
     const commentsElement = document.querySelector('.comments');
 
     // Массив имеющихся комментариев
-    const comments = [
-        {
-          name: 'Глеб Фокин',
-          date: '12.02.22 12:18',
-          text: 'Это будет первый комментарий на этой странице',
-          likes: '3',
-          liked: false
-        },
-        {
-          name: 'Варвара Н.',
-          date: '13.02.22 19:22',
-          text: 'Мне нравится как оформлена эта страница! ❤',
-          likes: '75',
-          liked: false
-        }
-      ];
-     
+    let comments = [];
+    const now = new Date();
+    const commentDate = `${("0" + now.getDate()).slice(-2)}.${("0" + (now.getMonth() + 1)).slice(-2)}.${now.getFullYear().toString().slice(-2)} ${("0" + now.getHours()).slice(-2)}:${("0" + now.getMinutes()).slice(-2)}`
+
+    //Запрос на получение комментария из API
+    fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
+    {
+      method: "GET"
+    }). then((response) => {
+      response.json().then((responseData) => {
+        //Преобразовываем данные api в формат приложения
+        const appComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            date: comment.date,
+            text: comment.text,
+            likes: comment.likes,
+            liked: false
+          }
+        })
+
+    comments = appComments;
+    renderComments();
+  });
+});
+
+
     // Функция для добавления лайка к комментарию
     const addLike =(event) => {
       const comment = comments[event.target.dataset.index];
@@ -81,15 +91,13 @@
       }
     }
 
-    const now = new Date();
-
     // Создаем для каждого комментария HTML-разметку
     const renderComments = () => {
       const commentsHtml = comments.map((comment, index) => {
         comment.liked ? comment.liked = '-active-like' : comment.liked = '';
         return `<li class="comment" >
         <div class="comment-header" data-index="${index}">
-          <div>${comment.name}.</div>
+          <div class="comment-name">${comment.name}.</div>
           <div>${comment.date}</div>
         </div>
         <div class="comment-body">
@@ -111,11 +119,11 @@
 
         //Функция ответа на комментарий
         const commentResponse = () => {
-          const commentTexts = document.querySelectorAll('.comment');
+          const commentTexts = document.querySelectorAll('.comment-text');
           for(const comment of commentTexts) {
             comment.addEventListener('click', (event) => {
               const message = event.target.textContent;
-              const author = comment.querySelector('.comment-header div:first-child').textContent;
+              const author = document.querySelector('.comment-name').textContent;
               addFormText.value = `>${message} \n @${author}`;
            })
           }
@@ -124,6 +132,18 @@
 
       };
     renderComments();
+
+     ////Запрос на добавление комментария в API
+     const postApiFunction = (comment) => {
+        fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
+          method: 'POST',
+          body: JSON.stringify(comment),
+        })
+          .then((response) => response.json())
+          .then((responseData) => {
+            console.log(responseData);
+          })
+      }
 
     //Обработчик события для добавления нового комментария
     addFormButton.addEventListener('click', () => {
@@ -142,35 +162,31 @@
          return
       } else {
         addFormText.classList.remove('error');
-      }
+      }  
 
-      comments.push({
+      const newComment = {
         //Закрытие уязвимостей
         name:addFormName.value.replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;"),
-        date: `${now.getDate()}.0${now.getMonth()}.${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
+        date: commentDate,
         text: addFormText.value.replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;"),
         likes: 0
-      })
-     
+      }
+      
+      //Добавление комментария
+      comments.push(newComment);
+      //Отправка комментария на сервер
+      postApiFunction(newComment); 
+      
       addFormName.value = '';
       addFormText.value = '';
       renderComments();
-    });
 
-    
-    // Расширенная валидация
-    // const addForm = document.querySelector('.add-form');
-    // addFormButton.disabled = true;
-    // addForm.addEventListener('input', () => {
-    //   if(addFormName.value !== '' && addFormText.value !== '') {
-    //     addFormButton.disabled = false;
-    //   }
-    // });
+    });
   </script>
 </html>
