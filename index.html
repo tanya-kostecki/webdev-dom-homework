@@ -58,8 +58,8 @@
 
     comments = appComments;
     renderComments();
-  });
-});
+      });
+    });
 
 
     // Функция для добавления лайка к комментарию
@@ -92,7 +92,7 @@
    // Создаем для каждого комментария HTML-разметку 
     const renderComments = () => {
       const commentsHtml = comments.map((comment, index) => {
-        const date = new Date();
+        const date = new Date(comment.date);
         const validDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
         comment.liked ? comment.liked = '-active-like' : comment.liked = '';
         return `<li class="comment" >
@@ -142,7 +142,25 @@
         })
           .then((response) => response.json())
           .then((responseData) => {
-            console.log(responseData);
+            fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
+            {
+              method: "GET"
+            }). then((response) => {
+              response.json().then((responseData) => {
+                const appComments = responseData.comments.map((comment) => {
+                  return {
+                    name: comment.author.name,
+                    date: new Date(comment.date),
+                    text: comment.text,
+                    likes: comment.likes,
+                    liked: false
+                  }
+                })
+
+            comments = appComments;
+            renderComments();
+              });
+            });
           })
       }
 
@@ -166,6 +184,7 @@
         return validName && validComment;
       };
 
+    //Создание нового комментария  
     function createNewComment() {
       const date = new Date();
       const newCommentDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
@@ -185,7 +204,6 @@
       
       //Добавление комментария
       if(validateData()) {
-        comments.push(newComment);
       //Отправка комментария на сервер
         postApiFunction(newComment); 
       };
