@@ -29,7 +29,7 @@
       </div>
     </div>
   </body>
-
+  
   <script>
     const addFormName = document.querySelector('.add-form-name');
     const addFormText = document.querySelector('.add-form-text');
@@ -37,23 +37,31 @@
     const commentsElement = document.querySelector('.comments');
 
     // Массив имеющихся комментариев
-    const comments = [
-        {
-          name: 'Глеб Фокин',
-          date: '12.02.22 12:18',
-          text: 'Это будет первый комментарий на этой странице',
-          likes: '3',
-          liked: false
-        },
-        {
-          name: 'Варвара Н.',
-          date: '13.02.22 19:22',
-          text: 'Мне нравится как оформлена эта страница! ❤',
-          likes: '75',
-          liked: false
-        }
-      ];
-     
+    let comments = [];
+   
+    //Запрос на получение комментария из API
+    fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
+    {
+      method: "GET"
+    }). then((response) => {
+      response.json().then((responseData) => {
+        //Преобразовываем данные api в формат приложения
+        const appComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            date: new Date(comment.date),
+            text: comment.text,
+            likes: comment.likes,
+            liked: false
+          }
+        })
+
+    comments = appComments;
+    renderComments();
+      });
+    });
+
+
     // Функция для добавления лайка к комментарию
     const addLike =(event) => {
       const comment = comments[event.target.dataset.index];
@@ -81,16 +89,16 @@
       }
     }
 
-    const now = new Date();
-
-    // Создаем для каждого комментария HTML-разметку
+   // Создаем для каждого комментария HTML-разметку 
     const renderComments = () => {
       const commentsHtml = comments.map((comment, index) => {
+        const date = new Date(comment.date);
+        const validDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
         comment.liked ? comment.liked = '-active-like' : comment.liked = '';
         return `<li class="comment" >
         <div class="comment-header" data-index="${index}">
-          <div>${comment.name}.</div>
-          <div>${comment.date}</div>
+          <div class="comment-name">${comment.name}.</div>
+          <div>${validDate}</div>
         </div>
         <div class="comment-body">
           <div class="comment-text">
@@ -107,6 +115,7 @@
         })
         .join('')
         commentsElement.innerHTML = commentsHtml;
+        
         initLikeClickListener();
 
         //Функция ответа на комментарий
@@ -114,8 +123,8 @@
           const commentTexts = document.querySelectorAll('.comment');
           for(const comment of commentTexts) {
             comment.addEventListener('click', (event) => {
-              const message = event.target.textContent;
-              const author = comment.querySelector('.comment-header div:first-child').textContent;
+              const message = comment.querySelector('.comment-body').textContent.trim();
+              const author = comment.querySelector('.comment-name').textContent;
               addFormText.value = `>${message} \n @${author}`;
            })
           }
@@ -124,6 +133,85 @@
 
       };
     renderComments();
+
+     //Запрос на добавление комментария в API
+     const postApiFunction = (comment) => {
+        fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
+          method: 'POST',
+          body: JSON.stringify(comment),
+        })
+          .then((response) => response.json())
+          .then((responseData) => {
+            fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
+            {
+              method: "GET"
+            }). then((response) => {
+              response.json().then((responseData) => {
+                const appComments = responseData.comments.map((comment) => {
+                  return {
+                    name: comment.author.name,
+                    date: new Date(comment.date),
+                    text: comment.text,
+                    likes: comment.likes,
+                    liked: false
+                  }
+                })
+
+            comments = appComments;
+            renderComments();
+              });
+            });
+          })
+      }
+
+      //Проверка введенных данных
+      const validateData = () => {
+      
+        const userNameValue = addFormName.value.trim();
+        const userCommentValue = addFormText.value.trim()
+
+        //Валидные значения
+        const validName = userNameValue.length >= 3;
+        const validComment = userCommentValue.length >= 3;
+        
+        if(!validName) {
+          addFormName.placeholder = "Введите не менее 3-х символов";
+        }
+        if(!validComment) {
+          addFormText.placeholder = "Введите не менее 3-х символов";
+        }
+
+        return validName && validComment;
+      };
+
+    //Создание нового комментария  
+    function createNewComment() {
+      const date = new Date();
+      const newCommentDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
+      const newComment = {
+        //Закрытие уязвимостей
+        name:addFormName.value.replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
+        date: newCommentDate,
+        text: addFormText.value.replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
+        likes: 0
+      }
+      
+      //Добавление комментария
+      if(validateData()) {
+      //Отправка комментария на сервер
+        postApiFunction(newComment); 
+      };
+        
+      addFormName.value = '';
+      addFormText.value = '';
+      renderComments();
+    }
 
     //Обработчик события для добавления нового комментария
     addFormButton.addEventListener('click', () => {
@@ -142,28 +230,11 @@
          return
       } else {
         addFormText.classList.remove('error');
-      }
+      }  
 
-      comments.push({
-        //Закрытие уязвимостей
-        name:addFormName.value.replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;"),
-        date: `${now.getDate()}.0${now.getMonth()}.${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
-        text: addFormText.value.replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;"),
-        likes: 0
-      })
-     
-      addFormName.value = '';
-      addFormText.value = '';
-      renderComments();
+      createNewComment();
     });
 
-    
     // Расширенная валидация
     // const addForm = document.querySelector('.add-form');
     // addFormButton.disabled = true;
@@ -171,6 +242,11 @@
     //   if(addFormName.value !== '' && addFormText.value !== '') {
     //     addFormButton.disabled = false;
     //   }
+    //   return
     // });
+
+    // addFormButton.addEventListener('click', () => {
+    //   createNewComment()
+    //})
   </script>
 </html>
