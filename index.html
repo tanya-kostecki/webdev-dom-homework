@@ -36,31 +36,43 @@
     const addFormButton = document.querySelector('.add-form-button');
     const commentsElement = document.querySelector('.comments');
 
+    const container = document.querySelector('.container');
+    const addForm = document.querySelector('.add-form');
+    const loader = document.createElement('span');
+
     // Массив имеющихся комментариев
     let comments = [];
    
+    //Загрузка комментариев на странице
+    loader.textContent = 'Комментарий  загружается...';
+    container.appendChild(loader);
+
     //Запрос на получение комментария из API
-    fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
-    {
-      method: "GET"
-    }). then((response) => {
-      response.json().then((responseData) => {
-        //Преобразовываем данные api в формат приложения
-        const appComments = responseData.comments.map((comment) => {
-          return {
-            name: comment.author.name,
-            date: new Date(comment.date),
-            text: comment.text,
-            likes: comment.likes,
-            liked: false
+    const fetchComment = () => {
+      return fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
+      {
+        method: "GET"
+      }).then((response) => {
+            return response.json()
+         })
+        .then((responseData) => {
+          loader.classList.add('hidden');
+          //Преобразовываем данные api в формат приложения
+          const appComments = responseData.comments.map((comment) => {
+            return {
+              name: comment.author.name,
+              date: new Date(comment.date),
+              text: comment.text,
+              likes: comment.likes,
+              liked: false
+            }
           }
-        })
+        )
 
-    comments = appComments;
-    renderComments();
+      comments = appComments;
+      renderComments();
       });
-    });
-
+    }
 
     // Функция для добавления лайка к комментарию
     const addLike =(event) => {
@@ -86,6 +98,18 @@
           event.stopPropagation();
           renderComments();
         });
+      }
+    }
+
+    //Функция ответа на комментарий
+    const commentResponse = () => {
+      const commentTexts = document.querySelectorAll('.comment');
+      for(const comment of commentTexts) {
+        comment.addEventListener('click', (event) => {
+          const message = comment.querySelector('.comment-body').textContent.trim();
+          const author = comment.querySelector('.comment-name').textContent;
+          addFormText.value = `>${message} \n @${author}`;
+        })
       }
     }
 
@@ -117,50 +141,29 @@
         commentsElement.innerHTML = commentsHtml;
         
         initLikeClickListener();
-
-        //Функция ответа на комментарий
-        const commentResponse = () => {
-          const commentTexts = document.querySelectorAll('.comment');
-          for(const comment of commentTexts) {
-            comment.addEventListener('click', (event) => {
-              const message = comment.querySelector('.comment-body').textContent.trim();
-              const author = comment.querySelector('.comment-name').textContent;
-              addFormText.value = `>${message} \n @${author}`;
-           })
-          }
-        }
         commentResponse();
 
       };
-    renderComments();
 
+    renderComments();
+    fetchComment();
+ 
      //Запрос на добавление комментария в API
      const postApiFunction = (comment) => {
-        fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
+        return fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
           method: 'POST',
           body: JSON.stringify(comment),
         })
-          .then((response) => response.json())
+          .then((response) => {
+            return response.json();
+          }) 
           .then((responseData) => {
-            fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
-            {
-              method: "GET"
-            }). then((response) => {
-              response.json().then((responseData) => {
-                const appComments = responseData.comments.map((comment) => {
-                  return {
-                    name: comment.author.name,
-                    date: new Date(comment.date),
-                    text: comment.text,
-                    likes: comment.likes,
-                    liked: false
-                  }
-                })
-
-            comments = appComments;
-            renderComments();
-              });
-            });
+            return fetchComment();
+            return renderComments();
+          })
+          .then((data) => {
+            loader.classList.add('hidden');
+            addForm.classList.remove('hidden');
           })
       }
 
@@ -177,6 +180,7 @@
         if(!validName) {
           addFormName.placeholder = "Введите не менее 3-х символов";
         }
+
         if(!validComment) {
           addFormText.placeholder = "Введите не менее 3-х символов";
         }
@@ -205,7 +209,10 @@
       //Добавление комментария
       if(validateData()) {
       //Отправка комментария на сервер
-        postApiFunction(newComment); 
+        postApiFunction(newComment);
+        //Загрузка комментария
+        addForm.classList.add('hidden');
+        loader.classList.remove('hidden'); 
       };
         
       addFormName.value = '';
@@ -215,6 +222,7 @@
 
     //Обработчик события для добавления нового комментария
     addFormButton.addEventListener('click', () => {
+      
       addFormName.classList.remove('error');
       addFormText.classList.remove('error');
 
@@ -230,23 +238,9 @@
          return
       } else {
         addFormText.classList.remove('error');
-      }  
-
+      }
+  
       createNewComment();
     });
-
-    // Расширенная валидация
-    // const addForm = document.querySelector('.add-form');
-    // addFormButton.disabled = true;
-    // addForm.addEventListener('input', () => {
-    //   if(addFormName.value !== '' && addFormText.value !== '') {
-    //     addFormButton.disabled = false;
-    //   }
-    //   return
-    // });
-
-    // addFormButton.addEventListener('click', () => {
-    //   createNewComment()
-    //})
   </script>
 </html>
