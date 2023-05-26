@@ -54,6 +54,11 @@
         method: "GET"
       }).then((response) => {
             return response.json()
+            if(response.status === 201) {
+              return response.json();
+             } else if (response.status === 500) {
+              throw new Error('Неполадки на сервере, попробуйте позже');
+            }
          })
         .then((responseData) => {
           loader.classList.add('hidden');
@@ -68,10 +73,12 @@
             }
           }
         )
-
-      comments = appComments;
-      renderComments();
-      });
+        comments = appComments;
+        renderComments();
+        })
+        .catch((error) => {
+          alert(error.message);
+        })
     }
 
     // Функция для добавления лайка к комментарию
@@ -152,10 +159,22 @@
      const postApiFunction = (comment) => {
         return fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
           method: 'POST',
-          body: JSON.stringify(comment),
+          body: JSON.stringify({
+            name: addFormName.value
+                .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+            text: addFormText.value
+                .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+            forceError: true,
+          }),
         })
           .then((response) => {
-            return response.json();
+            if(response.status === 201) {
+              return response.json();
+             } else if (response.status === 500) {
+              throw new Error('Неполадки на сервере, попробуйте позже');
+            } else if (response.status === 400 || addFormName.value.length < 3 && addFormText.value.length < 3) {
+              throw new Error('Имя и комментарий не должны быть короче 3-х символов');
+            }
           }) 
           .then((responseData) => {
             return fetchComment();
@@ -164,29 +183,27 @@
           .then((data) => {
             loader.classList.add('hidden');
             addForm.classList.remove('hidden');
+            addFormName.value = '';
+            addFormText.value = ''; 
+          })
+          .catch((error) => {
+            if(error.message === 'Неполадки на сервере, попробуйте позже') {
+              alert(error.message);
+              postApiFunction();
+            } else if(error.message === 'Failed to fetch') {
+              alert('Проблемы с подключением к сети Интетрет');
+              loader.classList.add('hidden');
+              addForm.classList.remove('hidden');
+            } else if (error.message === 'Имя и комментарий не должны быть короче 3-х символов' ){
+              loader.classList.add('hidden');
+              addForm.classList.remove('hidden');
+              alert(error.message);
+            } else {
+              alert(error.message);
+              console.warn(error);
+            }         
           })
       }
-
-      //Проверка введенных данных
-      const validateData = () => {
-      
-        const userNameValue = addFormName.value.trim();
-        const userCommentValue = addFormText.value.trim()
-
-        //Валидные значения
-        const validName = userNameValue.length >= 3;
-        const validComment = userCommentValue.length >= 3;
-        
-        if(!validName) {
-          addFormName.placeholder = "Введите не менее 3-х символов";
-        }
-
-        if(!validComment) {
-          addFormText.placeholder = "Введите не менее 3-х символов";
-        }
-
-        return validName && validComment;
-      };
 
     //Создание нового комментария  
     function createNewComment() {
@@ -205,18 +222,11 @@
         .replaceAll('"', "&quot;"),
         likes: 0
       }
-      
-      //Добавление комментария
-      if(validateData()) {
-      //Отправка комментария на сервер
-        postApiFunction(newComment);
-        //Загрузка комментария
-        addForm.classList.add('hidden');
-        loader.classList.remove('hidden'); 
-      };
+      postApiFunction(newComment);
+      //Загрузка комментария
+      addForm.classList.add('hidden');
+      loader.classList.remove('hidden');
         
-      addFormName.value = '';
-      addFormText.value = '';
       renderComments();
     }
 
