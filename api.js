@@ -2,14 +2,18 @@ import { loader, addFormName, addFormText, addForm } from "./main.js";
 import renderComments from "./renderComments.js";
 export let comments = [];
 
+const host = 'https://wedev-api.sky.pro/api/v2/:tanya-kostecki/comments';
+let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
 
 //Запрос на получение комментария из API
 export function fetchComment() {
-    return fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments',
-    {
-      method: "GET"
-    }).then((response) => {
-          return response.json()
+    return fetch(host, {
+      method: "GET",
+      headers: {
+        Authorization: token
+      }
+    }).then((response) => {        
+        return response.json()
        })
       .then((responseData) => {
         loader.classList.add('hidden');
@@ -35,7 +39,7 @@ export function fetchComment() {
 
   //Запрос на добавление комментария в API
  export function postApiFunction(comment) {
-    return fetch('https://webdev-hw-api.vercel.app/api/v1/tanya-kostecki/comments', {
+    return fetch(host, {
       method: 'POST',
       body: JSON.stringify({
         name: addFormName.value
@@ -44,6 +48,9 @@ export function fetchComment() {
             .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
         forceError: true,
       }),
+      headers: {
+        Authorization: token
+      }
     })
       .then((response) => {
         if(response.status === 201) {

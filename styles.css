@@ -101,6 +101,7 @@ body {
   }
 
   .add-form-name,
+  .add-form-login,
   .add-form-text {
     font-size: 16px;
     font-family: Helvetica;
@@ -113,6 +114,9 @@ body {
     padding: 11px 22px;
   }
 
+  .add-form-login {
+    padding: 11px 22px;
+  }
   .add-form-text {
     margin-top: 12px;
     padding: 22px;
@@ -124,7 +128,8 @@ body {
     justify-content: flex-end;
   }
 
-  .add-form-button {
+  .add-form-button,
+  .login-button {
     margin-top: 24px;
     font-size: 24px;
     padding: 10px 20px;
@@ -145,5 +150,6 @@ body {
   .hidden {
     display: none;
   }
+
 
   

@@ -85,24 +85,24 @@ function createNewComment() {
 }
 
 //Обработчик события для добавления нового комментария
-addFormButton.addEventListener('click', () => {
+// addFormButton.addEventListener('click', () => {
   
-  addFormName.classList.remove('error');
-  addFormText.classList.remove('error');
+//   addFormName.classList.remove('error');
+//   addFormText.classList.remove('error');
 
-  if(addFormName.value ==='') {
-     addFormName.classList.add('error');
-     return
-  } else {
-     addFormName.classList.remove('error');
-  }
+//   if(addFormName.value ==='') {
+//      addFormName.classList.add('error');
+//      return
+//   } else {
+//      addFormName.classList.remove('error');
+//   }
 
-  if(addFormText.value === '') {
-     addFormText.classList.add('error');
-     return
-  } else {
-    addFormText.classList.remove('error');
-  }
+//   if(addFormText.value === '') {
+//      addFormText.classList.add('error');
+//      return
+//   } else {
+//     addFormText.classList.remove('error');
+//   }
 
-  createNewComment();
-});
+//   createNewComment();
+// });
