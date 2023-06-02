@@ -1,8 +1,9 @@
 import { initLikeClickListener, commentResponse, commentsElement } from "./main.js";
-import { comments } from "./api.js";
+import { comments, fetchComment, token } from "./api.js";
+
 
 // Создаем для каждого комментария HTML-разметку 
-const renderComments = () => {
+const renderApp = () => {
   const appEl = document.getElementById('app');
   const commentsHtml = comments.map((comment, index) => {
     const date = new Date(comment.date);
@@ -25,31 +26,48 @@ const renderComments = () => {
       </div>
     </div>
     </li>`;
-    })
+  })
     .join('')
+
+  if(!token) {
+    const appHtml = `
+      <ul class="comments">
+        <!-- рендерится в js -->
+        ${commentsHtml}
+      </ul>  
+      <div class="add-form">
+          Форма входа <br></br>
+          <input
+            type="text"
+            class="add-form-login"
+            placeholder="Введите ваше имя"
+          />
+          <input
+            type="password"
+            class="add-form-text"
+            placeholder="Пароль"
+          />
+          <div class="add-form-row">
+            <button id="login-button" class="login-button">Войти</button>
+          </div>
+      </div>
+    `;
+  
+    appEl.innerHTML = appHtml;
+
+    document.getElementById('login-button').addEventListener('click', () => {
+       token = 'Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k';
+      // renderApp();
+      fetchComment();
+    })
+    return;
+  }
 
   const appHtml = `
     <ul class="comments">
       <!-- рендерится в js -->
       ${commentsHtml}
     </ul>
-
-    <div class="add-form">
-      Форма входа <br></br>
-      <input
-        type="text"
-        class="add-form-login"
-        placeholder="Введите ваше имя"
-      />
-      <input
-        type="password"
-        class="add-form-text"
-        placeholder="Пароль"
-    />
-      <div class="add-form-row">
-        <button class="login-button">Войти</button>
-      </div>
-    </div>
 
     <div class="add-form">
       <input
@@ -68,7 +86,7 @@ const renderComments = () => {
       </div>
     </div>
     `
-   
+
   appEl.innerHTML = appHtml;
 
   const addFormName = document.querySelector('.add-form-name');
@@ -76,28 +94,28 @@ const renderComments = () => {
   const addFormButton = document.querySelector('.add-form-button');
 
   addFormButton.addEventListener('click', () => {
-  
+
     addFormName.classList.remove('error');
     addFormText.classList.remove('error');
-  
-    if(addFormName.value ==='') {
-       addFormName.classList.add('error');
-       return
+
+    if (addFormName.value === '') {
+      addFormName.classList.add('error');
+      return
     } else {
-       addFormName.classList.remove('error');
+      addFormName.classList.remove('error');
     }
-  
-    if(addFormText.value === '') {
-       addFormText.classList.add('error');
-       return
+
+    if (addFormText.value === '') {
+      addFormText.classList.add('error');
+      return
     } else {
       addFormText.classList.remove('error');
     }
-  
+
     createNewComment();
   });
-      
+
   initLikeClickListener();
   commentResponse();
 };
-  export default renderComments
+export default renderApp

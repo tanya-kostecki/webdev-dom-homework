@@ -1,5 +1,5 @@
 import { fetchComment, postApiFunction, comments } from "./api.js";
-import renderComments from "./renderComments.js";
+import renderApp from "./renderComments.js";
 
 const addFormName = document.querySelector('.add-form-name');
 const addFormText = document.querySelector('.add-form-text');
@@ -39,7 +39,7 @@ export const initLikeClickListener = () => {
       (comments[event.target.dataset.index].liked) ? removeLike(event) : addLike(event);
       //Отмена всплытия на кнопке лайка
       event.stopPropagation();
-      renderComments();
+      renderApp();
     });
   }
 }
@@ -56,7 +56,7 @@ export const commentResponse = () => {
   }
 }
 
-renderComments();
+renderApp();
 fetchComment();
 
 //Создание нового комментария  
@@ -81,7 +81,7 @@ function createNewComment() {
   addForm.classList.add('hidden');
   loader.classList.remove('hidden');
     
-  renderComments();
+  renderApp();
 }
 
 //Обработчик события для добавления нового комментария
