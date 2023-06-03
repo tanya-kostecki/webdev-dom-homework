@@ -3,14 +3,12 @@ import renderApp from "./renderComments.js";
 export let comments = [];
 
 const host = 'https://wedev-api.sky.pro/api/v2/:tanya-kostecki/comments';
-let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
-token = null;
-// let newToken = '';
-// let token = `Bearer ${newToken}`;
-export { token };
+// let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+// token = null;
+// export { token };
 
 //Запрос на получение комментария из API
-export function fetchComment() {
+export function fetchComment(token) {
   return fetch(host, {
     method: "GET",
     headers: {
@@ -42,7 +40,7 @@ export function fetchComment() {
 fetchComment();
 
 //Запрос на добавление комментария в API
-export function postApiFunction() {
+export function postApiFunction(token) {
   return fetch(host, {
     method: 'POST',
     body: JSON.stringify({

@@ -1,9 +1,12 @@
 import { initLikeClickListener, commentResponse, commentsElement } from "./main.js";
-import { comments, fetchComment, token } from "./api.js";
+import { comments, fetchComment, } from "./api.js";
+import { renderLoginComponent } from "./components/login-component.js";
 
+let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+token = null;
 
 // Создаем для каждого комментария HTML-разметку 
-const renderApp = () => {
+export const renderApp = () => {
   const appEl = document.getElementById('app');
   const commentsHtml = comments.map((comment, index) => {
     const date = new Date(comment.date);
@@ -30,36 +33,46 @@ const renderApp = () => {
     .join('')
 
   if(!token) {
-    const appHtml = `
-      <ul class="comments">
-        <!-- рендерится в js -->
-        ${commentsHtml}
-      </ul>  
-      <div class="add-form">
-          Форма входа <br></br>
-          <input
-            type="text"
-            class="add-form-login"
-            placeholder="Введите ваше имя"
-          />
-          <input
-            type="password"
-            class="add-form-text"
-            placeholder="Пароль"
-          />
-          <div class="add-form-row">
-            <button id="login-button" class="login-button">Войти</button>
-          </div>
-      </div>
-    `;
-  
-    appEl.innerHTML = appHtml;
+  //   const appHtml = `
+  //   <ul class="comments">
+  //     <!-- рендерится в js -->
+  //     ${commentsHtml}
+  //   </ul>  
+  //   <div class="add-form">
+  //       Форма входа <br></br>
+  //       <input
+  //         type="text"
+  //         class="add-form-login"
+  //         placeholder="Введите ваше имя"
+  //       />
+  //       <input
+  //         type="password"
+  //         class="add-form-text"
+  //         placeholder="Пароль"
+  //       />
+  //       <div class="add-form-row">
+  //         <button id="login-button" class="login-button">Войти</button>
+  //       </div>
+  //   </div>
+  // `;
 
-    document.getElementById('login-button').addEventListener('click', () => {
-       token = 'Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k';
-      // renderApp();
-      fetchComment();
-    })
+  //   appEl.innerHTML = appHtml;
+
+  //   document.getElementById('login-button').addEventListener('click', () => {
+  //     token = 'Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k';
+  //     // renderApp();
+  //     fetchComment();
+  //   });
+    renderLoginComponent({ 
+      appEl, 
+      commentsHtml, 
+      setToken: (newToken) => {
+      token = newToken;
+      },
+      renderApp
+      // fetchComment();
+    });
+
     return;
   }
 
