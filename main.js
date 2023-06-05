@@ -47,6 +47,7 @@ export const initLikeClickListener = () => {
 //Функция ответа на комментарий
 export const commentResponse = () => {
   const commentTexts = document.querySelectorAll('.comment');
+  const addFormText = document.querySelector('.add-form-text');
   for(const comment of commentTexts) {
     comment.addEventListener('click', (event) => {
       const message = comment.querySelector('.comment-body').textContent.trim();
@@ -83,26 +84,3 @@ function createNewComment() {
     
   renderApp();
 }
-
-//Обработчик события для добавления нового комментария
-// addFormButton.addEventListener('click', () => {
-  
-//   addFormName.classList.remove('error');
-//   addFormText.classList.remove('error');
-
-//   if(addFormName.value ==='') {
-//      addFormName.classList.add('error');
-//      return
-//   } else {
-//      addFormName.classList.remove('error');
-//   }
-
-//   if(addFormText.value === '') {
-//      addFormText.classList.add('error');
-//      return
-//   } else {
-//     addFormText.classList.remove('error');
-//   }
-
-//   createNewComment();
-// });

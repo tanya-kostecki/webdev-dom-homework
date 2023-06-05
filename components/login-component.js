@@ -5,8 +5,8 @@ export function renderLoginComponent({ appEl, commentsHtml, setToken, renderApp 
       <!-- рендерится в js -->
       ${commentsHtml}
     </ul>  
-    <div class="add-form">
-        Форма входа <br></br>
+    <div class="login-form">
+        Чтобы оставить комментарий, необходимо войти в аккаунт <br></br>
         <input
           type="text"
           class="add-form-login"
@@ -21,13 +21,38 @@ export function renderLoginComponent({ appEl, commentsHtml, setToken, renderApp 
           <button id="login-button" class="login-button">Войти</button>
         </div>
     </div>
+    <div class="sign-up"> Нет аккаунта?
+      <button id="sign-up-button" class="sign-up-button">Зарегистрироваться</button>
+    </div>
   `;
 
     appEl.innerHTML = appHtml;
+    const loginButton = document.querySelector('.login-button');
+    // const loginName = document.querySelector('.add-form-login');
+    // const loginPassword = document.querySelector('.add-form-password');
 
-    document.getElementById('login-button').addEventListener('click', (newToken) => {
+    loginButton.addEventListener('click', (newToken) => {
+      // inputsCheck();
       setToken(`Bearer ${newToken}`);
       renderApp();
       // fetchComment();
     });
+
+    // function inputsCheck() {
+    //   if(loginName === '') {
+    //     loginName.placeholder = 'Введите логин';
+    //     loginName.classList.add('error');
+    //     return
+    //   } else {
+    //     loginName.classList.remove('error');
+    //   }
+
+    //   if(loginPassword === '') {
+    //     loginPassword.placeholder = 'Введите пароль';
+    //     loginPassword.classList.add('error');
+    //     return
+    //   } else {
+    //     loginPassword.classList.remove('error');
+    //   }
+    // }
 }

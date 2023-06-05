@@ -33,36 +33,6 @@ export const renderApp = () => {
     .join('')
 
   if(!token) {
-  //   const appHtml = `
-  //   <ul class="comments">
-  //     <!-- рендерится в js -->
-  //     ${commentsHtml}
-  //   </ul>  
-  //   <div class="add-form">
-  //       Форма входа <br></br>
-  //       <input
-  //         type="text"
-  //         class="add-form-login"
-  //         placeholder="Введите ваше имя"
-  //       />
-  //       <input
-  //         type="password"
-  //         class="add-form-text"
-  //         placeholder="Пароль"
-  //       />
-  //       <div class="add-form-row">
-  //         <button id="login-button" class="login-button">Войти</button>
-  //       </div>
-  //   </div>
-  // `;
-
-  //   appEl.innerHTML = appHtml;
-
-  //   document.getElementById('login-button').addEventListener('click', () => {
-  //     token = 'Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k';
-  //     // renderApp();
-  //     fetchComment();
-  //   });
     renderLoginComponent({ 
       appEl, 
       commentsHtml, 
@@ -105,6 +75,7 @@ export const renderApp = () => {
   const addFormName = document.querySelector('.add-form-name');
   const addFormText = document.querySelector('.add-form-text');
   const addFormButton = document.querySelector('.add-form-button');
+  
 
   addFormButton.addEventListener('click', () => {
 

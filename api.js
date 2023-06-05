@@ -1,4 +1,4 @@
-import { loader, addFormName, addFormText, addForm } from "./main.js";
+import { loader, addFormName, addFormText, addForm, } from "./main.js";
 import renderApp from "./renderComments.js";
 export let comments = [];
 
@@ -43,13 +43,7 @@ fetchComment();
 export function postApiFunction(token) {
   return fetch(host, {
     method: 'POST',
-    body: JSON.stringify({
-      name: addFormName.value
-        .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-      text: addFormText.value
-        .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-      forceError: true,
-    }),
+    body: JSON.stringify(comment),
     headers: {
       Authorization: token
     }
