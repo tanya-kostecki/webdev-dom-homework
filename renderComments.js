@@ -1,105 +1,163 @@
-import { initLikeClickListener, commentResponse, commentsElement } from "./main.js";
-import { comments, fetchComment, } from "./api.js";
-import { renderLoginComponent } from "./components/login-component.js";
+// import {  getWrittenComments, comments, addRemoveLike, token } from "./main.js";
+// import { postApiFunction } from "./api.js";
+// import { renderLogin, name } from "./components/login-component.js";
 
-let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
-token = null;
+// let isLoadingAdd = false;
 
-// Создаем для каждого комментария HTML-разметку 
-export const renderApp = () => {
-  const appEl = document.getElementById('app');
-  const commentsHtml = comments.map((comment, index) => {
-    const date = new Date(comment.date);
-    const validDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
-    comment.liked ? comment.liked = '-active-like' : comment.liked = '';
-    return `<li class="comment" >
-    <div class="comment-header" data-index="${index}">
-      <div class="comment-name">${comment.name}.</div>
-      <div>${validDate}</div>
-    </div>
-    <div class="comment-body">
-      <div class="comment-text">
-        ${comment.text}
-      </div>
-    </div>
-    <div class="comment-footer">
-      <div class="likes">
-        <span class="likes-counter">${comment.likes}</span>
-        <button data-index="${index}" class="like-button ${comment.liked}"></button>
-      </div>
-    </div>
-    </li>`;
-  })
-    .join('')
+// //Рендер формы
+// const renderForm = (isLoading) => {
+//   const addForm = document.querySelector('.add-form');
+//   const loader = document.getElementById('loader');
 
-  if(!token) {
-    renderLoginComponent({ 
-      appEl, 
-      commentsHtml, 
-      setToken: (newToken) => {
-      token = newToken;
-      },
-      renderApp
-      // fetchComment();
-    });
+//   if (isLoading) {
+//     loader.classList.remove('hidden');
+//     addForm.classList.add('hidden');
+//   } else {
+//     loader.classList.add('hidden');
+//     addForm.classList.remove(hidden);
+//   }
+// }
 
-    return;
-  }
+// Рендер функция
+// export const renderApp = (loadingComments) => {
+//   const appEl = document.getElementById('app');
+//   const commentsHtml = comments.map((comment, index) => {
+//     const date = new Date(comment.date);
+//     const validDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear().toString().slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
+//     comment.isLiked ? comment.isLiked = '-active-like' : comment.isLiked = '';
+//     return `<li class="comment" data-index="${index}">
+//     <div class="comment-header">
+//       <div class="comment-name">${comment.name}.</div>
+//       <div>${validDate}</div>
+//     </div>
+//     <div class="comment-body">
+//       <div class="comment-text">
+//         ${comment.text}
+//       </div>
+//     </div>
+//     <div class="comment-footer">
+//       <div class="likes">
+//         <span class="likes-counter">${comment.likes}</span>
+//         <button data-index="${index}" class="like-button ${comment.isLiked}"></button>
+//       </div>
+//     </div>
+//     </li>`;
+//   })
+//     .join('')
 
-  const appHtml = `
-    <ul class="comments">
-      <!-- рендерится в js -->
-      ${commentsHtml}
-    </ul>
+//   if (!token) {
+//     const appHtml = `
+//         <ul class="comments">
+//           ${
+//             loadingComments 
+//             ? "<p>Комментарии загружаются...</p>"
+//             : ""
+//           }
+//           ${commentsHtml}
+//         </ul>
+//         <p class="warning">Чтобы оставить комментарий, <button class="login-button">авторизуйтесь</buttton></p>
+//     `;
 
-    <div class="add-form">
-      <input
-        type="text"
-        class="add-form-name"
-        placeholder="Введите ваше имя"
-      />
-      <textarea
-        type="textarea"
-        class="add-form-text"
-        placeholder="Введите ваш коментарий"
-        rows="4"
-      ></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button">Написать</button>
-      </div>
-    </div>
-    `
+//     appEl.innerHTML = appHtml;
+//     document.querySelector('.login-button').addEventListener('click', () => {
+//       renderLogin({
+//         appEl,
+//         setToken: (newToken) => {
+//           token = newToken;
+//         },
+//         getWrittenComments,
+//       });
+//     });
 
-  appEl.innerHTML = appHtml;
+//     return;
+//   }
 
-  const addFormName = document.querySelector('.add-form-name');
-  const addFormText = document.querySelector('.add-form-text');
-  const addFormButton = document.querySelector('.add-form-button');
-  
+//   const appHtml = `
+//     <ul class="comments">
+//       ${
+//         loadingComments 
+//           ? "<p>Комментарии загружаются...</p>"
+//           : ""
+//       }
+//       ${commentsHtml}
+//     </ul>
+//     <div class="add-form">
+//       <input
+//         type="text"
+//         class="add-form-name"
+//         placeholder="Введите ваше имя"
+//       />
+//       <textarea
+//         type="textarea"
+//         class="add-form-text"
+//         placeholder="Введите ваш коментарий"
+//         rows="4"
+//       ></textarea>
+//       <div class="add-form-row">
+//         <button class="add-form-button" id="button-add">Написать</button>
+//       </div>
+//     </div>
+//     <div class="loading-comment hidden" id="loader">Комментарий добавляется...</div>
+//   `;
 
-  addFormButton.addEventListener('click', () => {
+//   appEl.innerHTML = appHtml;
 
-    addFormName.classList.remove('error');
-    addFormText.classList.remove('error');
+//   const addFormName = document.querySelector('.add-form-name');
+//   const addFormText = document.querySelector('.add-form-text');
+//   const addFormButton = document.querySelector('.add-form-button');
+//   addFormButton.disabled = true;
 
-    if (addFormName.value === '') {
-      addFormName.classList.add('error');
-      return
-    } else {
-      addFormName.classList.remove('error');
-    }
+//   addFormName.value = name;
+//   addFormName.disabled = true;
 
-    if (addFormText.value === '') {
-      addFormText.classList.add('error');
-      return
-    } else {
-      addFormText.classList.remove('error');
-    }
+//   addFormText.addEventListener('input', () => {
+//     addFormButton.disabled = false;
+//   });
 
-    createNewComment();
-  });
+//   //Обработяик события для создания комментария
+//   addFormButton.addEventListener('click', () => {
+//     addFormText.classList.remove('error');
 
-  initLikeClickListener();
-  commentResponse();
-};
-export default renderApp
+//     isLoadingAdd = true;
+//     renderForm(isLoadingAdd); //main.js file
+
+//     postApiFunction({
+//       text: addFormText.value
+//         .replaceAll("&", "&amp;")
+//         .replaceAll("<", "&lt;")
+//         .replaceAll(">", "&gt;")
+//         .replaceAll('"', "&quot;"),
+//       token,
+//     })
+//       .then(() => {
+//         return getWrittenComments();
+//       })
+//       .then(() => {
+//         isLoadingAdd = false;
+//         renderForm(isLoadingAdd);
+//         addFormText.value = "";
+//       })
+//       .catch((error) => {
+//         isLoadingAdd = false;
+//         renderForm(isLoadingAdd);
+//         alert(error.message);
+//       });
+//   });
+
+//   //Ввод текста
+//   addFormButton.disabled = true;
+//   addFormButton.classList.add('empty');
+//   addFormText.addEventListener('input', () => {
+//     if(addFormText.value.trim() !== '') {
+//       addFormButton.disabled = false;
+//       addFormButton.classList.remove('empty');
+//     } else {
+//       addFormButton.disabled = true;
+//       addFormButton.classList.add('empty');
+//     }
+//   });
+
+//   addRemoveLike(comments);
+// };
+
+

@@ -23,7 +23,8 @@ body {
 
   .comment,
   .add-form,
-  .login-form {
+  .login-form,
+  .loading-comment {
     width: 596px;
     box-sizing: border-box;
     background: radial-gradient(
@@ -102,10 +103,15 @@ body {
     flex-direction: column;
   }
 
+  .loading-comment {
+    padding: 10px;
+    margin-top: 20px;
+  }
+
   .add-form-name,
-  .add-form-login,
+  .form-login,
   .add-form-text,
-  .add-form-password {
+  .form-password {
     font-size: 16px;
     font-family: Helvetica;
     border-radius: 8px;
@@ -117,11 +123,7 @@ body {
     padding: 11px 22px;
   }
 
-  .add-form-login {
-    padding: 11px 22px;
-  }
-  .add-form-text,
-  .add-form-password {
+  .add-form-text {
     margin-top: 12px;
     padding: 22px;
     resize: none;
@@ -133,8 +135,7 @@ body {
   }
 
   .add-form-button,
-  .login-button,
-  .sign-up-button {
+  .login-form-button {
     margin-top: 24px;
     font-size: 24px;
     padding: 10px 20px;
@@ -144,8 +145,16 @@ body {
     cursor: pointer;
   }
 
-  .add-form-button:hover {
+  .add-form-button:hover,
+  .login-form-button:hover {
     opacity: 0.9;
+  }
+
+  .form-password,
+  .form-login {
+    margin-top: 20px;
+    font-size: 24px;
+    padding: 11px 22px;
   }
 
   .error {
@@ -154,6 +163,31 @@ body {
 
   .hidden {
     display: none;
+  }
+  
+  .empty {
+    background-color: grey;
+  }
+
+  .button-enter {
+    text-align: center;
+    font-size: 32px;
+    color:#bcec30;
+  }
+
+  .login-button {
+    background-color: #bcec30;
+    margin-top: 20px;
+    font-size: 24px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 18px;
+  }
+
+  .warning {
+    text-align: center;
+    font-size: 24px;
   }
 
 
