@@ -59,7 +59,7 @@ export function renderLogin({ appEl, setToken, getWrittenComments }) {
             alert(error.message);
           });
       } else {
-        const name = document.getElementById("name-input");
+        const nameInput = document.getElementById("name-input");
         const login = document.getElementById("login-input");
         const password = document.getElementById("password-input");
 
@@ -77,20 +77,21 @@ export function renderLogin({ appEl, setToken, getWrittenComments }) {
           return;
         }
 
-        name.classList.remove('error');
+        nameInput.classList.remove('error');
 
-        if (name.value === "") {
-          name.classList.add('error');
+        if (nameInput.value === "") {
+          nameInput.classList.add('error');
           return;
         }
 
         registerUser({
           login: login.value,
           password: password.value,
-          name: name.value,
+          name: nameInput.value,
         })
           .then((user) => {
             setToken(`Bearer ${user.user.token}`);
+            name = user.user.name;
             getWrittenComments();
           })
           .catch((error) => {
