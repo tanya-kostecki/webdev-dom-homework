@@ -6,7 +6,7 @@ let isLoadingAdd = false;
 import { fetchComment, postApiFunction } from "./api.js";
 import { renderLogin, name } from "./components/login-component.js";
 
-//Рендер имеющихся комментарий
+//Рендер комментарий
 export const getWrittenComments = async () => {
   renderApp(loadingComments);
   return fetchComment({ token })
