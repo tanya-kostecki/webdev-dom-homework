@@ -43,6 +43,7 @@ const renderForm = (isLoading) => {
   }
 };
 
+//Рендер функция
 const renderApp = (loadingComments) => {
   const appEl = document.getElementById('app');
   const commentsHtml = comments.map((comment, index) => {
